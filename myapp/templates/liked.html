@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+
+{% if wishlist_items %}
+  {% for item in wishlist_items%}
+  <div>
+    <img src="{{item.product.image.url}}" alt="">
+    <h2>{{item.product.name}}</h2>
+    <h2>{{item.product.price}}</h2>
+  </div>
+  {%endfor%}
+
+{% endif%}

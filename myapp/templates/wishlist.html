@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}MyShop — Sevimlilar{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div>
+    <h1>Mening sevimli mahsulotlarim</h1>
+    <p>Siz saqlab qo'ygan mahsulotlar.</p>
+  </div>
+  <span class="count">{{ wishlist_items|length }} ta</span>
+</section>
+
+{% if wishlist_items %}
+<div class="products-grid">
+  {% for item in wishlist_items %}
+  <article class="card">
+    <a class="card-image" href="{% url 'products-view' item.mahsulot.slug %}" tabindex="-1" aria-hidden="true">
+      {% if item.mahsulot.image %}<img src="{{ item.mahsulot.image.url }}" alt="" loading="lazy" decoding="async">
+      {% else %}<span class="no-image">Rasm mavjud emas</span>{% endif %}
+    </a>
+    <div class="card-body">
+      <h3 class="card-title"><a href="{% url 'products-view' item.mahsulot.slug %}">{{ item.mahsulot.nomi }}</a></h3>
+      <div class="card-foot">
+        <div class="price">{{ item.mahsulot.narxi|intcomma }} <small>so'm</small></div>
+        <form method="post" action="{% url 'toggle_wishlist' item.mahsulot.id %}" data-wishlist-form data-remove>
+          {% csrf_token %}
+          <button type="submit" class="like-btn liked">🗑️ O'chirish</button>
+        </form>
+      </div>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="no-products">Sevimlilar ro'yxati bo'sh. <a href="{% url 'index' %}">Mahsulotlarga o'tish</a></p>
+{% endif %}
+{% endblock %}

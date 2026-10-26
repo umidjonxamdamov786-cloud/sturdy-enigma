@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}MyShop — Mahsulotlar{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div>
+    <h1>Mahsulotlar</h1>
+    <p>Kerakli mahsulotni tanlang.</p>
+  </div>
+  <span class="count">{{ page_obj.paginator.count }} ta</span>
+</section>
+
+<div class="layout">
+  <aside class="sidebar">
+    <h2>Kategoriyalar</h2>
+    <a class="category-link {% if not selected_category %}active{% endif %}"
+       href="{% url 'index' %}{% if q %}?q={{ q|urlencode }}{% endif %}">Barcha mahsulotlar</a>
+    {% for kategorya in category %}
+    <a class="category-link {% if selected_category == kategorya.id %}active{% endif %}"
+       href="?category={{ kategorya.id }}{% if q %}&amp;q={{ q|urlencode }}{% endif %}">{{ kategorya.nomi }}</a>
+    {% empty %}
+    <p class="category-empty">Hozircha kategoriya yo'q.</p>
+    {% endfor %}
+  </aside>
+
+  <section>
+    {% if q or selected_category %}
+    <p class="filter-note">
+      {% if q %}«{{ q }}» bo'yicha qidiruv. {% endif %}
+      <a href="{% url 'index' %}">Filtrni tozalash</a>
+    </p>
+    {% endif %}
+
+    <div class="products-grid">
+      {% for x in mahsulotlar %}
+      {% include "_card.html" %}
+      {% empty %}
+      <p class="no-products">Hozircha mahsulot topilmadi.</p>
+      {% endfor %}
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="pagination" aria-label="Sahifalar">
+      {% if page_obj.has_previous %}
+      <a class="page-btn" href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&amp;category={{ selected_category }}{% endif %}{% if q %}&amp;q={{ q|urlencode }}{% endif %}">← Oldingi</a>
+      {% endif %}
+
+      <span class="page-info">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+
+      {% if page_obj.has_next %}
+      <a class="page-btn" href="?page={{ page_obj.next_page_number }}{% if selected_category %}&amp;category={{ selected_category }}{% endif %}{% if q %}&amp;q={{ q|urlencode }}{% endif %}">Keyingi →</a>
+      {% endif %}
+    </nav>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,197 @@
+
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Savatcham | MyShop{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/cart.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="cart-page">
+
+    <div class="cart-heading">
+        <div>
+            <span class="cart-label">MYSHOP / SAVATCHA</span>
+            <h1>Mening savatcham <span>♡</span></h1>
+            <p>Tanlagan mahsulotlaringizni bir joyda boshqaring.</p>
+        </div>
+
+        <div class="cart-icon">
+            <span>🛍️</span>
+        </div>
+    </div>
+
+    <div class="cart-layout">
+
+       
+        <section class="cart-products">
+
+            <div class="cart-section-heading">
+                <h2>Mahsulotlar</h2>
+                <span class="cart-count">
+                    {{ cart_items|length }} ta mahsulot
+                </span>
+            </div>
+
+            {% for item in cart_items %}
+            <article class="cart-item">
+
+                <div class="cart-product-image">
+                    {% if item.mahsulot.image %}
+                    <img src="{{ item.mahsulot.image.url }}"
+                         alt="{{ item.mahsulot.nomi }}">
+                    {% else %}
+                    <span>📦</span>
+                    {% endif %}
+                </div>
+
+                <div class="cart-product-info">
+                    <span class="product-category">
+                        {{ item.mahsulot.category.nomi|default:"Mahsulot" }}
+                    </span>
+
+                    <h3>{{ item.mahsulot.nomi }}</h3>
+
+                    <p class="product-description">
+                        {{ item.mahsulot.tavsifi|default:"Sifatli mahsulot" }}
+                    </p>
+
+                    <span class="stock-status">
+                        <span class="stock-dot"></span>
+                        {% if item.mahsulot.miqdori >= item.quantity %}Omborda mavjud{% else %}Omborda faqat {{ item.mahsulot.miqdori }} dona{% endif %}
+                    </span>
+
+                    <div class="quantity-control">
+                        <form method="post" action="{% url 'cart_update' item.id 'dec' %}" class="inline-form">
+                            {% csrf_token %}
+                            <button type="submit" class="quantity-btn" aria-label="Kamaytirish">−</button>
+                        </form>
+
+                        <span class="quantity-number">{{ item.quantity }}</span>
+
+                        <form method="post" action="{% url 'cart_update' item.id 'inc' %}" class="inline-form">
+                            {% csrf_token %}
+                            <button type="submit" class="quantity-btn" aria-label="Ko‘paytirish">+</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="cart-item-end">
+                    <div class="cart-item-price">
+                        {{ item.total_price|intcomma }} so‘m
+                    </div>
+
+                    
+                    <form method="post" action="{% url 'cart_remove' item.id %}" class="inline-form">
+                        {% csrf_token %}
+                        <button type="submit" class="remove-item" aria-label="Mahsulotni o‘chirish">
+                            ✕ O‘chirish
+                        </button>
+                    </form>
+                </div>
+
+            </article>
+            {% empty %}
+
+            <div class="empty-cart">
+                <div class="empty-cart-icon">🛍️</div>
+                <h3>Savatchangiz hozircha bo‘sh</h3>
+                <p>Yoqtirgan mahsulotlaringizni savatchaga qo‘shing.</p>
+
+                <a href="{% url 'index' %}" class="continue-shopping">
+                    Xaridni davom ettirish →
+                </a>
+            </div>
+
+            {% endfor %}
+
+            {% if cart_items %}
+            <a href="{% url 'index' %}" class="back-to-shop">
+                ← Xaridni davom ettirish
+            </a>
+            {% endif %}
+
+        </section>
+
+       
+        <aside class="cart-summary">
+
+            <div class="summary-heading">
+                <span class="summary-icon">✦</span>
+                <h2>Buyurtma xulosasi</h2>
+            </div>
+
+            <div class="summary-row">
+                <span>Mahsulotlar narxi</span>
+                <strong>{{ subtotal|intcomma }} so‘m</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Chegirma</span>
+                <strong class="discount-value">
+                    {{ discount|intcomma }} so‘m
+                </strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Yetkazib berish</span>
+                <strong class="delivery-value">Hisoblanadi</strong>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-total">
+                <span>Jami to‘lov</span>
+                <strong>{{ total|intcomma }} so‘m</strong>
+            </div>
+
+            
+            {% if cart_items %}
+            <a href="{% url 'checkout' %}" class="checkout-btn">
+                Buyurtma berish
+                <span>→</span>
+            </a>
+            {% else %}
+            <button type="button" class="checkout-btn" disabled>
+                Buyurtma berish
+                <span>→</span>
+            </button>
+            {% endif %}
+
+            <div class="secure-note">
+                <span>♧</span>
+                <p>Xavfsiz xarid va qulay to‘lov</p>
+            </div>
+
+            <div class="summary-benefits">
+                <div class="benefit-item">
+                    <span class="benefit-icon">🚚</span>
+                    <div>
+                        <strong>Tez yetkazib berish</strong>
+                        <small>Buyurtmangiz eshigingizgacha</small>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <span class="benefit-icon">🛡️</span>
+                    <div>
+                        <strong>Sifat kafolati</strong>
+                        <small>Xaridingiz biz uchun muhim</small>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <span class="benefit-icon">💳</span>
+                    <div>
+                        <strong>Qulay to‘lov</strong>
+                        <small>Oson va qulay xarid</small>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+    </div>
+</div>
+{% endblock %}

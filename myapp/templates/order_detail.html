@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Buyurtma #{{ order.pk }} | MyShop{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/orders.css' %}">
+{% endblock %}
+
+{% block content %}
+<a class="back-link" href="{% url 'orders' %}">← Buyurtmalarga qaytish</a>
+
+<section class="hero">
+  <div>
+    <h1>Buyurtma #{{ order.pk }}</h1>
+    <p>{{ order.created|date:"d.m.Y H:i" }}</p>
+  </div>
+  <span class="status {{ order.status }}">{{ order.get_status_display }}</span>
+</section>
+
+<div class="order-layout">
+  <section class="panel">
+    <h2>Mahsulotlar</h2>
+    {% for item in order.items.all %}
+    <div class="sum-line">
+      <span>
+        {% if item.mahsulot %}<a href="{% url 'products-view' item.mahsulot.slug %}">{{ item.nomi }}</a>{% else %}{{ item.nomi }}{% endif %}
+        <small>× {{ item.quantity }} · {{ item.narxi|intcomma }} so'm</small>
+      </span>
+      <span>{{ item.total_price|intcomma }} so'm</span>
+    </div>
+    {% endfor %}
+    <div class="sum-total"><span>Jami</span><strong>{{ order.total_price|intcomma }} so'm</strong></div>
+
+    {% if order.status == "new" %}
+    <form method="post" action="{% url 'order_cancel' order.pk %}" class="order-actions"
+          onsubmit="return confirm('Buyurtmani bekor qilasizmi?');">
+      {% csrf_token %}
+      <button type="submit" class="btn danger">Buyurtmani bekor qilish</button>
+    </form>
+    {% endif %}
+  </section>
+
+  <aside class="panel order-summary">
+    <h2>Yetkazib berish</h2>
+    <p><strong>{{ order.ism }}</strong></p>
+    <p>{{ order.telefon }}</p>
+    {% if order.email %}<p>{{ order.email }}</p>{% endif %}
+    <p>{{ order.manzil|linebreaksbr }}</p>
+    {% if order.izoh %}<p class="meta">Izoh: {{ order.izoh }}</p>{% endif %}
+  </aside>
+</div>
+{% endblock %}

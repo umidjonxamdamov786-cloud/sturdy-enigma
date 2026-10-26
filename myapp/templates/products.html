@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}Mahsulotlar — MyShop{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div>
+    <h1>Mahsulotlar</h1>
+    <p>Kerakli mahsulotni tanlang.</p>
+  </div>
+  <span class="count">{{ mahsulotlar|length }} ta</span>
+</section>
+
+<div class="layout">
+  <aside class="sidebar">
+    <h2>Kategoriyalar</h2>
+    <a class="category-link {% if not request.GET.category %}active{% endif %}"
+       href="{% url 'products' %}{% if request.GET.q %}?q={{ request.GET.q|urlencode }}{% endif %}">Barcha mahsulotlar</a>
+    {% for kategorya in category %}
+    <a class="category-link {% if request.GET.category == kategorya.id|stringformat:'s' %}active{% endif %}"
+       href="?category={{ kategorya.id }}{% if request.GET.q %}&amp;q={{ request.GET.q|urlencode }}{% endif %}">{{ kategorya.nomi }}</a>
+    {% empty %}
+    <p class="category-empty">Hozircha kategoriya yo'q.</p>
+    {% endfor %}
+  </aside>
+
+  <section>
+    <div class="products-grid">
+      {% for x in mahsulotlar %}
+      {% url 'products-view' x.slug as detail_url %}
+      <article class="card">
+        <a class="card-image" href="{{ detail_url }}" tabindex="-1" aria-hidden="true">
+          {% if x.image %}<img src="{{ x.image.url }}" alt="" loading="lazy" decoding="async">
+          {% else %}<span class="no-image">Rasm mavjud emas</span>{% endif %}
+        </a>
+
+        <div class="card-body">
+          <span class="chip{% if not x.category %} muted{% endif %}">{{ x.category.nomi|default:"Kategoriyasiz" }}</span>
+
+          <h3 class="card-title"><a href="{{ detail_url }}">{{ x.nomi }}</a></h3>
+          <p class="card-desc">{{ x.tavsifi|default:"Tavsif kiritilmagan"|truncatechars:80 }}</p>
+
+          <div class="rating-line">
+            {% include "stars.html" with value=x.avg_rating|default:0 %}
+            <span>({{ x.review_count }})</span>
+          </div>
+
+          <div class="card-foot">
+            <div>
+              <div class="price">{{ x.narxi|intcomma }} <small>so'm</small></div>
+              {% if x.miqdori %}
+              <div class="stock">Omborda: {{ x.miqdori }} dona</div>
+              {% else %}
+              <div class="stock out">Sotuvda yo'q</div>
+              {% endif %}
+            </div>
+
+            <div class="meta-row">
+              <span>{{ x.korish }} marta ko'rilgan</span>
+              <form method="post" action="{% url 'like' x.slug %}">
+                {% csrf_token %}
+                {% if x.id in liked_ids %}
+                <button type="submit" class="like-btn liked" aria-pressed="true">Yoqdi ({{ x.like_count }})</button>
+                {% else %}
+                <button type="submit" class="like-btn" aria-pressed="false">Yoqtirish ({{ x.like_count }})</button>
+                {% endif %}
+              </form>
+            </div>
+
+            <div class="card-actions">
+              <a class="btn primary" href="{{ detail_url }}">Batafsil ko'rish</a>
+              {% if x.miqdori %}
+              <button type="button" class="btn ghost">Sotib olish</button>
+              {% else %}
+              <button type="button" class="btn ghost" disabled>Sotuvda yo'q</button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </article>
+      {% empty %}
+      <p class="no-products">Hozircha mahsulot topilmadi.</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

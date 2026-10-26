@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Buyurtma berish | MyShop{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/orders.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div>
+    <h1>Buyurtma berish</h1>
+    <p>Ma'lumotlarni kiriting, telefon raqamingizga SMS (va emailga) kod yuboramiz.</p>
+  </div>
+</section>
+
+<div class="order-layout">
+  <form method="post" class="order-form panel" novalidate>
+    {% csrf_token %}
+    <h2>Ma'lumotlar</h2>
+    {% if form.non_field_errors %}
+    <div class="message error">{{ form.non_field_errors }}</div>
+    {% endif %}
+    {% for field in form %}
+    <div class="field">
+      {{ field.label_tag }}
+      {{ field }}
+      {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn submit-btn">Kod yuborish</button>
+  </form>
+
+  <aside class="order-summary panel">
+    <h2>Buyurtmangiz</h2>
+    {% for item in cart_items %}
+    <div class="sum-line">
+      <span>{{ item.mahsulot.nomi }} <small>× {{ item.quantity }}</small></span>
+      <span>{{ item.total_price|intcomma }} so'm</span>
+    </div>
+    {% endfor %}
+    <div class="sum-total"><span>Jami</span><strong>{{ total|intcomma }} so'm</strong></div>
+  </aside>
+</div>
+{% endblock %}

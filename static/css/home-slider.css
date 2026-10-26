@@ -1,0 +1,151 @@
+/* Bosh sahifa uchun rasm slayderi */
+.home-slider {
+    width: min(1200px, 100%);
+    margin: 0 auto 32px;
+}
+
+.home-slider__viewport {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #202b3e;
+    border-radius: 20px;
+    background: #0b1018;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, .28);
+}
+
+.home-slider__track {
+    display: flex;
+    width: 100%;
+    transition: transform .45s ease;
+    will-change: transform;
+}
+
+.home-slider__slide {
+    position: relative;
+    flex: 0 0 100%;
+    min-width: 0;
+    height: clamp(190px, 31vw, 360px);
+    background: #0b1018;
+}
+
+.home-slider__slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.home-slider__slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(5, 7, 11, .68), rgba(5, 7, 11, .08) 75%);
+    pointer-events: none;
+}
+
+.home-slider__caption {
+    position: absolute;
+    z-index: 1;
+    left: clamp(18px, 4vw, 46px);
+    bottom: clamp(20px, 4vw, 42px);
+    max-width: 520px;
+}
+
+.home-slider__caption h2 {
+    margin: 0 0 8px;
+    color: #fff;
+    font-size: clamp(22px, 3.5vw, 38px);
+    line-height: 1.15;
+}
+
+.home-slider__caption p {
+    margin: 0;
+    color: #d3daea;
+    font-size: clamp(13px, 1.6vw, 16px);
+}
+
+.home-slider__arrow {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 50%;
+    background: rgba(5, 7, 11, .72);
+    color: #fff;
+    font-size: 25px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: background .2s, border-color .2s;
+}
+
+.home-slider__arrow:hover {
+    background: #6555f5;
+    border-color: #8175ff;
+}
+
+.home-slider__arrow--prev {
+    left: 14px;
+}
+
+.home-slider__arrow--next {
+    right: 14px;
+}
+
+.home-slider__footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 0 0;
+}
+
+.home-slider__dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: 0;
+    border-radius: 99px;
+    background: #465064;
+    cursor: pointer;
+    transition: width .2s, background .2s;
+}
+
+.home-slider__dot.is-active {
+    width: 25px;
+    background: #7668ff;
+}
+
+@media (max-width: 600px) {
+    .home-slider__slide {
+        height: 210px;
+    }
+
+    .home-slider__arrow {
+        width: 34px;
+        height: 34px;
+        font-size: 20px;
+    }
+
+    .home-slider__arrow--prev {
+        left: 8px;
+    }
+
+    .home-slider__arrow--next {
+        right: 8px;
+    }
+
+    .home-slider__caption {
+        right: 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-slider__track {
+        transition: none;
+    }
+}

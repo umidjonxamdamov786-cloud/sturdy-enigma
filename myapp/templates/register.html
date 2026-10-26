@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Ro'yxatdan o'tish — MyShop{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <form method="post" class="form-container">
+        {% csrf_token %}
+        <h2>Ro'yxatdan o'tish</h2>
+
+        {{ form.non_field_errors }}
+
+        <div class="input-group">
+            {{ form.username }}
+            {{ form.username.errors }}
+        </div>
+
+        <div class="input-group">
+            {{ form.email }}
+            {{ form.email.errors }}
+        </div>
+
+        <div class="input-group">
+            {{ form.password }}
+            {{ form.password.errors }}
+        </div>
+
+        <button type="submit" class="btn submit-btn">Ro'yxatdan o'tish</button>
+
+        <p class="auth-link">
+            Hisobingiz bormi?
+            <a href="{% url 'login' %}">Kirish</a>
+        </p>
+    </form>
+</div>
+{% endblock %}

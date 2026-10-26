@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Kirish — MyShop{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <form method="post" class="form-container">
+        {% csrf_token %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+        <h2>Tizimga kirish</h2>
+
+        <div class="input-group">
+            <input type="text" placeholder="Username" name="username" autocomplete="username" required autofocus>
+        </div>
+
+        <div class="input-group">
+            <input type="password" placeholder="Parol" name="password" autocomplete="current-password" required>
+        </div>
+
+        <button type="submit" class="btn submit-btn">Kirish</button>
+
+        <p class="auth-link">
+            Hisobingiz yo'qmi?
+            <a href="{% url 'register' %}">Ro'yxatdan o'tish</a>
+        </p>
+    </form>
+</div>
+{% endblock %}

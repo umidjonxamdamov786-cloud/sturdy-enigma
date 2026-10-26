@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+{% block title %}{{ mahsulot.nomi }} — MyShop{% endblock %}
+
+{% block content %}
+<a class="back-link" href="{% url 'index' %}">← Mahsulotlarga qaytish</a>
+
+<article class="product-detail">
+  <div data-slider>
+    <div class="gallery-viewport">
+      <div class="gallery-track" data-track>
+        {% if mahsulot.image %}
+        <div class="gallery-slide"><img src="{{ mahsulot.image.url }}" alt="{{ mahsulot.nomi }}"></div>
+        {% endif %}
+        {% for rasm in mahsulot.images.all %}
+        <div class="gallery-slide"><img src="{{ rasm.image.url }}" alt="{{ mahsulot.nomi }} — rasm {{ forloop.counter }}"></div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="gallery-controls" data-controls>
+      <button type="button" class="arrow" data-prev aria-label="Oldingi rasm">‹</button>
+      <div class="gallery-dots" data-dots></div>
+      <button type="button" class="arrow" data-next aria-label="Keyingi rasm">›</button>
+    </div>
+  </div>
+
+  <div class="detail-info">
+    {% if mahsulot.category %}<span class="chip">{{ mahsulot.category.nomi }}</span>{% endif %}
+    <h1>{{ mahsulot.nomi }}</h1>
+
+    <div class="rating-line">
+      {% include "stars.html" with value=average_rating %}
+      <span>{{ average_rating }} / 5 · {{ review_count }} ta sharh</span>
+    </div>
+
+    <p class="detail-desc">{{ mahsulot.tavsifi }}</p>
+    <p class="detail-price">{{ mahsulot.narxi|intcomma }} so'm</p>
+
+    <div class="detail-actions">
+      {% if mahsulot.miqdori and mahsulot.miqdori > 0 %}
+      <span class="badge">Omborda: {{ mahsulot.miqdori }} dona</span>
+      {% else %}
+      <span class="badge out">Sotuvda yo'q</span>
+      {% endif %}
+      <span class="stock">{{ mahsulot.korish }} marta ko'rilgan</span>
+
+      {% if mahsulot.miqdori > 0 %}
+      <form method="post" action="{% url 'add_to_cart' mahsulot.slug %}">
+        {% csrf_token %}
+        <button type="submit" class="btn">Savatchaga qo'shish</button>
+      </form>
+      {% endif %}
+
+      <form method="post" action="{% url 'toggle_wishlist' mahsulot.id %}" data-wishlist-form
+            data-label-on="♥ Sevimlilardan olib tashlash" data-label-off="♡ Sevimlilarga qo'shish">
+        {% csrf_token %}
+        <button type="submit" class="like-btn {% if in_wishlist %}liked{% endif %}">
+          {% if in_wishlist %}♥ Sevimlilardan olib tashlash{% else %}♡ Sevimlilarga qo'shish{% endif %} ({{ wishlist_count }})
+        </button>
+      </form>
+    </div>
+  </div>
+</article>
+
+<section class="reviews">
+  <div class="panel">
+    <h2>Mijozlarning sharhlari</h2>
+    {% if reviews %}
+    <div class="rating-summary">
+      <span class="big">{{ average_rating }}</span>
+      {% include "stars.html" with value=average_rating %}
+      <span class="stock">{{ review_count }} ta sharh</span>
+    </div>
+    {% for review in reviews %}
+    <div class="review-item">
+      <div class="review-head">
+        <span><b>{{ review.user.username }}</b> {% include "stars.html" with value=review.rating %}</span>
+        <time datetime="{{ review.created|date:'c' }}">{{ review.created|date:"d.m.Y H:i" }}</time>
+      </div>
+      <p>{{ review.comment }}</p>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p class="empty-note">Hozircha bu mahsulotga sharh yozilmagan. Birinchi bo'lib yozing!</p>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <h2>Sharh qoldirish</h2>
+    <form method="post" class="review-form">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn">Sharh yuborish</button>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/product.js' %}"></script>{% endblock %}

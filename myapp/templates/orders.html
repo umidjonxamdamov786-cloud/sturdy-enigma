@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Buyurtmalarim | MyShop{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/orders.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div>
+    <h1>Mening buyurtmalarim</h1>
+    <p>Barcha buyurtmalaringiz tarixi.</p>
+  </div>
+  <span class="count">{{ orders|length }} ta</span>
+</section>
+
+{% if orders %}
+<div class="orders-list">
+  {% for order in orders %}
+  <a class="order-row" href="{% url 'order_detail' order.pk %}">
+    <div>
+      <strong>Buyurtma #{{ order.pk }}</strong>
+      <div class="meta">{{ order.created|date:"d.m.Y H:i" }} · {{ order.items.all|length }} ta mahsulot</div>
+    </div>
+    <span class="status {{ order.status }}">{{ order.get_status_display }}</span>
+    <strong>{{ order.total_price|intcomma }} so'm</strong>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<p class="no-products">Hozircha buyurtma yo'q. <a href="{% url 'index' %}">Xarid qilishni boshlang</a></p>
+{% endif %}
+{% endblock %}
